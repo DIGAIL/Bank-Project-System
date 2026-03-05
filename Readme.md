@@ -20,9 +20,9 @@ All data is stored using file handling.
 - C++  
 - STL (Vector)  
 - functions  
-Files Handling  
-structures   
-Console Application  
+- Files Handling  
+- structures   
+- Console Application  
 
 ## How to Run
 1. Clone the repository
