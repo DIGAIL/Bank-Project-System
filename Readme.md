@@ -15,6 +15,11 @@ All data is stored using file handling.
 &nbsp;&nbsp;&nbsp;&nbsp;Edit client data. 
 - Find Client<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Search for client.  
+## Transactions Feature
+- Deposit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Deposit Amount Into Account.
+- WithDraw<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WithDraw Amount Into Account.
 
 ## Technologies
 - C++  
