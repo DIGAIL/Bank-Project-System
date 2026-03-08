@@ -17,9 +17,9 @@ All data is stored using file handling.
 &nbsp;&nbsp;&nbsp;&nbsp;Search for client.  
 ## Transactions Feature
 - Deposit<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Deposit Amount Into Account.
+&nbsp;&nbsp;&nbsp;&nbsp;add money to client's account. 
 - WithDraw<br>
-&nbsp;&nbsp;&nbsp;&nbsp;WithDraw Amount Into Account.
+&nbsp;&nbsp;&nbsp;&nbsp;remove money from a client's account, with validation 
 
 ## Technologies
 - C++  
