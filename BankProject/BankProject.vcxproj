@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0ce476d5-fa2c-450b-b8da-f55592ef3045}</ProjectGuid>
-    <RootNamespace>BankProj</RootNamespace>
+    <ProjectGuid>{d8adcb4f-70d8-44e6-ac51-fe357454fb0c}</ProjectGuid>
+    <RootNamespace>BankProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -123,11 +123,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BankProj.cpp" />
+    <ClCompile Include="BankProject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\BankProject1\BankProject1\Clients.txt" />
-    <Text Include="..\..\BankProject1\BankProject1\Users.txt" />
+    <Text Include="Clients.txt" />
+    <Text Include="Users.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

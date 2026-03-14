@@ -16,14 +16,11 @@ void SetColor(int color)
 const string ClientsFileName = "Clients.txt";
 const string UsersFileName = "Users.txt";
 enum EnTransactions { eDeposit = 1, eWithDraw = 2, eTotalBalances = 3, emain_menu = 4 };
-enum EnPerformanceMainMenuOptions { eShowClientList = 1, eAddNewClient = 2, eDeleteClient = 3, eUpDateClient = 4, eFindClient = 5, enlTransactions = 6, ManagUsers = 7, eExit = 8 };
+enum EnPerformanceMainMenuOptions { eShowClientList = 1, eAddNewClient = 2, eDeleteClient = 3, eUpDateClient = 4, eFindClient = 5, enlTransactions = 6, eManagUsers = 7,eATMsystem=8, eExit = 9 };
 
 enum enMainMenuPermission { pAll = -1, pShowClientList = 1, pAddNewClient = 2, pDeleteClient = 4, pUpDateClient = 8, pFindClient = 16, pTransactions = 32, pManageUsers = 64 };
 enum enUsers { ShowUserList = 1, Add_New_User = 2, DeleteUser = 3, UpDateUser = 4, FindUser = 5, MainMenu = 6 };
-void ShowManageUsersMainMenuScreen();
-void ShowTransactionsMenuScreen();
-bool  CheckAccessPermissions(enMainMenuPermission Permission);
-void ShowTheMainMenuScreen();
+enum enATMPerformanceMainMenuOption { enQuickWithdraw = 1, enNormalWithdraw = 2,enDeposit=3, enCheckBalance = 4,enATMLogout=5,enSystemLogout=6 };
 struct stClient
 {
     string AccountNumber;
@@ -33,6 +30,7 @@ struct stClient
     double AccountBalance = 0;
     bool MarkForDelete = false;
 };
+stClient CurrentClient;
 struct stUsers
 {
     string UserName;
@@ -41,6 +39,13 @@ struct stUsers
     char MarkForDelete = false;
 };
 stUsers CurrentUser;
+void ShowManageUsersMainMenuScreen();
+void ShowTransactionsMenuScreen();
+void ATMLogin();
+bool  CheckAccessPermissions(enMainMenuPermission Permission);
+void ShowATMMainMenuScreen(string AccountNumber);
+void CheckClientBalance(string AccountNumber, vector<stClient>& vClients);
+void ShowTheMainMenuScreen();
 void Login();
 void ShowAccessDeniedScreen();
 
@@ -276,20 +281,20 @@ void ShowAllClientsList(vector <stClient> vClients)
     }
     cout << "\n\t\t\t\t\tClient List (" << vClients.size() << ") Client(s).\n";
     cout << "\n***********************************************";
-    cout << "*********************************************\n" << endl;
-    cout << "|| " << left << setw(15) << "Accout Number ";
+    cout << "*******************************************||\n" << endl;
+    cout << "|| " << left << setw(15) << "Accout Number";
     cout << "|| " << left << setw(12) << "Pin Code";
     cout << "|| " << left << setw(20) << "Client Name";
     cout << "|| " << left << setw(12) << "Phone";
     cout << "|| " << left << setw(12) << "Balance";
     cout << "\n*****************************************";
-    cout << "**********************************************\n" << endl;
+    cout << "*******************************************||\n" << endl;
     for (stClient Client : vClients)
     {
         PrintClientRecord(Client);
 
     }
-    cout << endl;
+    cout << " || " << endl;
     cout << "\n*****************************************";
     cout << "**********************************************\n" << endl;
 }
@@ -362,7 +367,7 @@ bool ShowUpdateClientByAccountNumberScreen(string AccountNumber, vector <stClien
     {
         ShowAccessDeniedScreen();
     }
-    
+
     cout << "\n==================================================\n ";
     cout << Tabs(3) << " Update Client Screen \n";
     cout << "\n==================================================\n ";
@@ -483,7 +488,7 @@ short ReadPerformanceMainMenuOption()
 bool DepositBalanceByAccountNumber(string AccountNumber, double Amount, vector <stClient>& vClients)
 {
     char Answer = 'y';
-    cout << "\n\n are you sure want to deposit [" << Amount << "] into [" << AccountNumber << "] Account\n";
+    cout << "\n\n are you sure want to make this actions [" << Amount << "] into [" << AccountNumber << "] Account \n";
     cin >> Answer;
     if (Answer == 'y' || Answer == 'Y')
     {
@@ -521,9 +526,7 @@ void showDepositScreen()
         cout << "\nClient with Account Number [" << AccountNumber << "] is Not Found!\n";
         AccountNumber = ReadClientAccountNumber();
     }
-    cout << "\n==================================================\n ";
-    cout << Tabs(3) << " Deposit Screen \n";
-    cout << "\n==================================================\n ";
+
     PrintClientCard(Client);
     double Amount = 0;
     cout << "\n enter Amount to deposit :\n";
@@ -586,7 +589,6 @@ void ShowClientsTotalBalanceScreen()
     cout << "_________________________________________\n" << endl;
     for (stClient Client : vClients)
     {
-
         PrintClientRecord(Client);
         TotalBalance += Client.AccountBalance;
     }
@@ -628,9 +630,9 @@ void PerformanceTransactionsOption(EnTransactions TransactionsOption)
     }
     }
 }
-bool  CheckAccessPermission(int UserPermission,enMainMenuPermission Permission)
+bool  CheckAccessPermission(int UserPermission, enMainMenuPermission Permission)
 {
-   // Permission = ConvertOptionToPermission(Permission);
+    // Permission = ConvertOptionToPermission(Permission);
     if (UserPermission == enMainMenuPermission::pAll)
         return true;
     return (UserPermission & Permission) != 0;
@@ -641,24 +643,24 @@ bool CheckAccessPermissions(enMainMenuPermission Permission)
 }
 void ShowTransactionsMenuScreen()
 {
-    enMainMenuPermission Permission;
+    enMainMenuPermission Permission = {};
     if (!CheckAccessPermissions(enMainMenuPermission::pTransactions))
     {
         ShowAccessDeniedScreen();
     }
     SetColor(14);
-    cout << "\n=================================================\n ";
-    cout << Tabs(3) << "Transactions Menu Screen \n";
-    cout << "\n=================================================\n ";
-    cout << Tabs(3) << " [1] Deposit \n";
-    cout << Tabs(3) << " [2] WithDraw \n";
-    cout << Tabs(3) << " [3] TotalBalances \n";
-    cout << Tabs(3) << " [4] Main Menu \n";
-    cout << "=================================================\n ";
+    cout << "\n";
+    cout << "||********************************************||\n ";
+    cout << "||" << Tabs(2) << "Transactions Menu Screen   ||\n";
+    cout << "||********************************************||\n ";
+    cout << "||" << Tabs(2) << " [1] Deposit               ||\n";
+    cout << "||" << Tabs(2) << " [2] WithDraw              ||\n";
+    cout << "||" << Tabs(2) << " [3] TotalBalances         ||\n";
+    cout << "||" << Tabs(2) << " [4] Main Menu             ||\n";
+    cout << "||********************************************||\n ";
     PerformanceTransactionsOption(EnTransactions(ReadTransactionOption()));
     SetColor(7);
 }
-void ShowTheMainMenuScreen();
 void PerformanceMainMenuOptions(EnPerformanceMainMenuOptions PerformanceOption)
 {
     vector<stClient> vClients = LoadCleintsDataFromFile(ClientsFileName);
@@ -697,10 +699,16 @@ void PerformanceMainMenuOptions(EnPerformanceMainMenuOptions PerformanceOption)
             ShowTransactionsMenuScreen();
             GoBackToTheMainMenu();
             break;
-        case EnPerformanceMainMenuOptions::ManagUsers:
+        case EnPerformanceMainMenuOptions::eManagUsers:
         {
             system("cls");
             ShowManageUsersMainMenuScreen();
+        }
+        case EnPerformanceMainMenuOptions::eATMsystem:
+        {
+            system("cls");
+            ATMLogin();
+            GoBackToTheMainMenu();
         }
         case EnPerformanceMainMenuOptions::eExit:
             system("cls");
@@ -712,11 +720,12 @@ void PerformanceMainMenuOptions(EnPerformanceMainMenuOptions PerformanceOption)
     else {
         cout << "\n AN ERROR CHOICE \n";
         system("cls");
-       // ShowTheMainMenuScreen();
-        return ;
+        // ShowTheMainMenuScreen();
+        return;
     }
 
 }
+/////////////////////////////////////////////////////////////////////////////////
 /* this function give user permissions to use pragram; */
 int ReadPermission()
 {
@@ -888,7 +897,7 @@ string ConvertUserRecordToLine(stUsers User, string Seperator = "#//#")
 }
 void ShowAddNewUserScreen()
 {
- 
+
     stUsers User;
     User = ReadNewUsers();
     AddDataLineToFile(UsersFileName, ConvertUserRecordToLine(User));
@@ -991,7 +1000,7 @@ vector <stUsers> SaveUserDataToFile(string FileName, vector <stUsers> vUsers)
 }
 bool ShowDeleteUserByUserNameScreen(string UserName, vector <stUsers>& vUsers)
 {
-    
+
     UserName = ReadUserName();
     stUsers User;
     char Answer = 'n';
@@ -1029,7 +1038,7 @@ bool ShowDeleteUserByUserNameScreen(string UserName, vector <stUsers>& vUsers)
 }
 bool ShowUpdateUserByUserNameScreen(string UserName, vector <stUsers>& vUsers)
 {
-   
+
     UserName = ReadUserName();
     stUsers User;
     char Answer = 'n';
@@ -1064,7 +1073,7 @@ bool ShowUpdateUserByUserNameScreen(string UserName, vector <stUsers>& vUsers)
 }   ///////////////////////////////////////////////////////////////////////////////
 void ShowSearchForUserScreen()
 {
-    
+
     stUsers User;
     string UserName = ReadUserName();
     if (FindUserByUserNameRecord(UserName, User))
@@ -1146,7 +1155,7 @@ void ShowManageUsersMainMenuScreen()
     if (!CheckAccessPermissions(enMainMenuPermission::pManageUsers))
     {
         ShowAccessDeniedScreen();
-        return ;
+        return;
 
     }
     SetColor(14);
@@ -1186,18 +1195,19 @@ void ShowTheMainMenuScreen()
     cout << "\t||" << Tabs(2) << " [5] FindClient                ||\n";
     cout << "\t||" << Tabs(2) << " [6] Transactions              ||\n";
     cout << "\t||" << Tabs(2) << " [7] Manage Users              ||\n";
-    cout << "\t||" << Tabs(2) << " [8] LogOut                    ||\n";
+    cout << "\t||" << Tabs(2) << " [8] ATM system                ||\n";
+    cout << "\t||" << Tabs(2) << " [9] LogOut                    ||\n";
     cout << "\t||*************************************||\n";
     PerformanceMainMenuOptions(EnPerformanceMainMenuOptions(ReadPerformanceMainMenuOption()));
 }
 bool FindUserByUserNameAndPassword(string UserName, string Password, stUsers& User)
 {
     vector <stUsers> vUsers = LoadUserDataFromFile(UsersFileName);
-    for (stUsers U : vUsers)
+    for (stUsers &U : vUsers)
     {
         if (U.UserName == UserName && U.Password == Password)
         {
-            User=U;
+            User = U;
             return true;
 
         }
@@ -1212,9 +1222,232 @@ bool LoadUserInfo(string UserName, string Password)
     }
     return false;
 }
-void  Login()
+/*Here is the starting of ATM Management Systen*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+short ReadQuickWithdrawOption()
 {
-    string UserName, Password;
+    short Option;
+    cout << "\n what do you want to do [1--8] ";
+    cin >> Option;
+    return Option;
+}
+int PerformanceQuickWithdrawOption(short Option)
+{
+    switch (Option)
+    {
+    case 1:
+        return 100;
+    case 2:
+        return 200;
+    case 3:
+        return 300;
+    case 4:
+        return 400;
+    case 5:
+        return 500;
+    case 6:
+        return 600;
+    case 7:
+        return 900;
+    case 8:
+        return 1000;
+    default:
+        return 0;
+    }
+}
+void ShowQuickWithdrawScreen(string &AccountNumber, vector <stClient> vClients)
+{
+    stClient Client;
+    system("cls");
+    SetColor(7);
+    cout << "\n[1] 100 \t\t [2] 200\n";
+    cout << "[3] 300 \t\t [4] 400\n";
+    cout << "[5] 500 \t\t [6] 600\n";
+    cout << "[7] 900 \t\t [8] 1000\n";
+    DepositBalanceByAccountNumber(AccountNumber, PerformanceQuickWithdrawOption(ReadQuickWithdrawOption())* -1, vClients);
+}
+void ShowNormalWithdrawScreen(string &AccountNumber, vector <stClient> &vClients)
+{
+    stClient Client;
+    
+    system("cls");
+    SetColor(7);
+    cout << "||***************************************||\n";
+    cout << "||\t Normal Withdraw Screen              ||\n";
+    cout << "||***************************************||\n";
+    double Amount = 0;
+    cout << " \nEnter amout to  Withdraw ";
+    cin >> Amount;
+    for (stClient &C : vClients)
+    {
+        if (C.AccountNumber == AccountNumber)
+        {
+            Client = C;
+            break;
+        }
+    }
+    while (Amount > Client.AccountBalance)
+    {
+        cout << " \nAmount Exceeds,You can withdraw up to " << Client.AccountBalance << " ";
+        cin >> Amount;
+    }
+    DepositBalanceByAccountNumber(AccountNumber, Amount * -1, vClients);
+}
+void ShowATMDepositScreen(string &AccountNumber, vector <stClient> &vClients)
+{
+    system("cls");
+    stClient Client;
+    
+    SetColor(2);
+    cout << "\n";
+    cout << "||*************************************************||\n\n";
+    cout << "||" << Tabs(3) << " Deposit Screen                   ||\n\n";
+    cout << "||*************************************************||\n\n";
+    CheckClientBalance(AccountNumber,vClients);
+    int Amount = 0;
+    cout << "\nEnter Amount To Deposit abstract /5 ";
+    cin >> Amount;
+    
+    if ((Amount >= 20 )&& Amount % 5 == 0)
+    {
+        DepositBalanceByAccountNumber(AccountNumber, Amount, vClients);
+    }
+    else
+    {
+        system("cls");
+        ShowATMDepositScreen(AccountNumber,vClients);
+        return;
+    }
+        
+
+}
+short ReadATMMenuOption()
+{
+    short Option = 0;
+    cout << " what do you want to do [1-3] ";
+    cin >> Option;
+    return Option;
+}
+void GoBackToATMMainMenuScreen(string AccountNumber)
+{
+    
+    cout << "press any key to return to ATM Main M,enu Screen....";
+    system("pause>0");
+    system("cls");    
+    ShowATMMainMenuScreen(AccountNumber);
+
+}
+void CheckClientBalance(string AccountNumber, vector<stClient> &vClients)
+{
+        stClient Client;
+        
+        
+        for (stClient &C : vClients)
+        {
+          
+            if (C.AccountNumber == AccountNumber)
+            {
+
+                cout << "\n your Balance is " << C.AccountBalance << endl << endl;
+            }
+            return;
+        }
+    
+}
+void ShowCheckBalanceScreen(string AccountNumber,vector <stClient> &vClients)
+{
+   
+    cout << "||**********************************||\n";
+    cout << "||\t Check Balance Screen           ||\n";
+    cout << "||**********************************||\n";
+    CheckClientBalance(AccountNumber,vClients);
+}
+bool FindClientByAccountNumberAndPinCode(string AccountNumber, string PinCode, stClient &Client)
+{
+    vector <stClient> vClients = LoadCleintsDataFromFile(ClientsFileName);
+    for (stClient C : vClients)
+    {
+        if (C.AccountNumber == AccountNumber && C.PinCode == PinCode)
+        {
+            Client = C;
+            return true;
+
+        }
+    }
+    return false;
+}
+bool LoadClientInfo(string UserName, string Password)
+{
+    if (FindClientByAccountNumberAndPinCode(UserName, Password, CurrentClient))
+    {
+        return true;
+    }
+    return false;
+}
+void PerformanceATMSystemOption(short Option, string &AccountNumber)
+{
+    stClient Client;
+    vector <stClient> vClients = LoadCleintsDataFromFile(ClientsFileName);
+    switch (Option)
+    {
+    case enATMPerformanceMainMenuOption::enQuickWithdraw:
+    {
+        system("cls");
+        ShowQuickWithdrawScreen(AccountNumber, vClients);
+        GoBackToATMMainMenuScreen(AccountNumber);
+        break;
+    }
+    case enATMPerformanceMainMenuOption::enNormalWithdraw:
+    {
+        system("cls");
+        ShowNormalWithdrawScreen(AccountNumber,vClients);
+        GoBackToATMMainMenuScreen(AccountNumber);
+        break;
+    }
+    case enATMPerformanceMainMenuOption::enDeposit:
+    {
+        system("cls");
+        ShowATMDepositScreen(AccountNumber,vClients);
+        GoBackToATMMainMenuScreen(AccountNumber);
+    }
+    case enATMPerformanceMainMenuOption::enCheckBalance:
+    {
+        system("cls");
+        ShowCheckBalanceScreen(AccountNumber,vClients);
+        GoBackToATMMainMenuScreen(AccountNumber);
+        break;
+    }
+    case enATMPerformanceMainMenuOption::enATMLogout:
+    {
+        system("cls");
+        ATMLogin();
+        break;
+    }
+    case enATMPerformanceMainMenuOption::enSystemLogout:
+    {
+        system("cls");
+        Login();
+        break;
+    }
+    }
+}
+void ShowATMMainMenuScreen(string AccountNumber)
+{
+    SetColor(2);
+    system("cls");
+    cout << "|| *********************||\n";
+    cout << "|| [1] Quick WithDraw   ||\n";
+    cout << "|| [2] Normal WithDraw  ||\n";
+    cout << "|| [3] Deposit          ||\n";
+    cout << "|| [4] Check Balance    ||\n";
+    cout << "|| [5] ATM Logout       ||\n";
+    cout << "|| [6] systen Logout    ||\n";
+    cout << "|| *********************||\n";
+    PerformanceATMSystemOption(enATMPerformanceMainMenuOption(ReadATMMenuOption()), AccountNumber);
+}
+void ATMLogin()
+{
+    string AccountNumber, PinCode;
     bool LoginFaileld = false;
     do {
         system("cls");
@@ -1229,6 +1462,33 @@ void  Login()
             cout << "\n\n" << Tabs(2) << " Login failed,please try again: \n";
 
         }
+        cout << "\n\tAccount Number:";
+        getline(cin >> ws, AccountNumber);
+        cout << "\n\tPassword:";
+        getline(cin, PinCode);
+
+        LoginFaileld = !LoadClientInfo(AccountNumber, PinCode);
+    } while (LoginFaileld);
+    ShowATMMainMenuScreen(AccountNumber);
+}
+/*Here is the end of ATM Management System*/ 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void  Login()
+{
+    string UserName, Password;
+    bool LoginFaileld = false;
+    do {
+        system("cls");
+        cout << "\n";
+        cout << Tabs(2) << "*******************\n";
+        cout << Tabs(2) << "|| Login Page    ||\n";
+        cout << Tabs(2) << "*******************\n";
+
+        if (LoginFaileld)
+        {
+            cout << "\n\n" << Tabs(2) << " Login failed,please try again: \n";
+
+        }
         cout << "\n\tUserName:";
         getline(cin >> ws, UserName);
         cout << "\n\tPassword:";
@@ -1239,8 +1499,6 @@ void  Login()
     SetColor(7);
     ShowTheMainMenuScreen();
 }
-
-
 int main()
 {
 
